@@ -1,27 +1,27 @@
 // To parse this JSON data, do
 //
-//     final objectsModel = objectsModelFromJson(jsonString);
+//     final subjectsModel = subjectsModelFromJson(jsonString);
 
 import 'dart:convert';
 
-ObjectsModel objectsModelFromJson(String str) =>
-    ObjectsModel.fromJson(json.decode(str));
+SubjectsModel subjectsModelFromJson(String str) =>
+    SubjectsModel.fromJson(json.decode(str));
 
-String objectsModelToJson(ObjectsModel data) => json.encode(data.toJson());
+String subjectsModelToJson(SubjectsModel data) => json.encode(data.toJson());
 
-class ObjectsModel {
+class SubjectsModel {
   String message;
-  List<ObjectModel> data;
+  List<SubjectModel> data;
 
-  ObjectsModel({
+  SubjectsModel({
     required this.message,
     required this.data,
   });
 
-  factory ObjectsModel.fromJson(Map<String, dynamic> json) => ObjectsModel(
+  factory SubjectsModel.fromJson(Map<String, dynamic> json) => SubjectsModel(
         message: json["message"],
-        data: List<ObjectModel>.from(
-            json["data"].map((x) => ObjectModel.fromJson(x))),
+        data: List<SubjectModel>.from(
+            json["data"].map((x) => SubjectModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,7 +30,7 @@ class ObjectsModel {
       };
 }
 
-class ObjectModel {
+class SubjectModel {
   int id;
   String name;
   String image;
@@ -38,7 +38,7 @@ class ObjectModel {
   DateTime updatedAt;
   String imageUrl;
 
-  ObjectModel({
+  SubjectModel({
     required this.id,
     required this.name,
     required this.image,
@@ -47,7 +47,7 @@ class ObjectModel {
     required this.imageUrl,
   });
 
-  factory ObjectModel.fromJson(Map<String, dynamic> json) => ObjectModel(
+  factory SubjectModel.fromJson(Map<String, dynamic> json) => SubjectModel(
         id: json["id"],
         name: json["name"],
         image: json["image"],

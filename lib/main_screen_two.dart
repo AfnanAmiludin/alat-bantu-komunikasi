@@ -158,7 +158,8 @@ class _MainScreenTwoState extends State<MainScreenTwo> {
                   InkWell(
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Sentence()),
+                      MaterialPageRoute(
+                          builder: (context) => const Sentences()),
                     ),
                     child: Container(
                       height: MediaQuery.of(context).size.width * 0.17,

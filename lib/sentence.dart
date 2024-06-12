@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:tugas_akhir/models/object.dart';
+import 'package:tugas_akhir/models/sentence.dart';
+import 'package:tugas_akhir/models/subject.dart';
+import 'package:tugas_akhir/services/object_service.dart';
 
-class Sentence extends StatefulWidget {
-  const Sentence({super.key});
+class Sentences extends StatefulWidget {
+  const Sentences({super.key});
 
   @override
-  State<Sentence> createState() => _SentenceState();
+  State<Sentences> createState() => _SentencesState();
 }
 
-class _SentenceState extends State<Sentence> {
+class _SentencesState extends State<Sentences> {
   final ExpansionTileController controller = ExpansionTileController();
   final _textController = TextEditingController();
   final FlutterTts _flutterTts = FlutterTts();
+  late Future<SentencesModel> _sentence;
+
+  void initState() {
+    super.initState();
+    _sentence = ObjectService.getAllSentence();
+  }
 
   speak(String text) async {
     await _flutterTts.setLanguage("id-ID");
@@ -28,7 +38,7 @@ class _SentenceState extends State<Sentence> {
         child: AppBar(
           centerTitle: true,
           title: Text(
-            "Sentence",
+            "Speech",
             style: TextStyle(
                 fontSize: 25.0,
                 fontWeight: FontWeight.w600,
@@ -135,197 +145,58 @@ class _SentenceState extends State<Sentence> {
             ],
           ),
           SingleChildScrollView(
-            child: Container(
-              margin: EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Tolong ambilkan jus jeruk");
+            child: Column(
+              children: <Widget>[
+                Container(
+                    height: MediaQuery.of(context).size.width * 2.1,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(24),
+                      child: FutureBuilder(
+                        future: _sentence,
+                        builder:
+                            (context, AsyncSnapshot<SentencesModel> snapshot) {
+                          var state = snapshot.connectionState;
+                          if (state != ConnectionState.done) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            if (snapshot.hasData) {
+                              return GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                ),
+                                itemCount: snapshot.data!.data.length,
+                                itemBuilder: (context, index) {
+                                  var dataSubject = snapshot.data!.data[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      speak(dataSubject.sentence);
+                                    },
+                                    child: Image.network(
+                                      dataSubject.imageUrl,
+                                      height: 80,
+                                      width: 70,
+                                    ),
+                                  );
+                                },
+                              );
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  snapshot.error.toString(),
+                                ),
+                              );
+                            } else {
+                              return Text('');
+                            }
+                          }
                         },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/jusjeruk.jpeg'),
-                        ),
                       ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text = "Aku ingin pisang");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/pisang.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "aku ingin makan buah apel");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/apel.jpeg'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    indent: MediaQuery.of(context).size.width * 0.07,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Tolong ambilkan air putih");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/air.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Tolong ambilkan buah mangga");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/mangga.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Tolong buatkan ayam goreng");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/ayamgoreng.jpeg'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    indent: MediaQuery.of(context).size.width * 0.07,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text = "Aku ingin makan bakso");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/bakso.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(
-                              _textController.text = "tolong buatkan aku mie");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/mie.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Aku ingin makan mie ayam");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/mieayam.jpeg'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    indent: MediaQuery.of(context).size.width * 0.07,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Aku ingin makan nasi goreng");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/nasigoreng.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text = "Tolong ambilkan susu");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/susu.jpeg'),
-                        ),
-                      ),
-                      Divider(
-                        indent: MediaQuery.of(context).size.width * 0.07,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          speak(_textController.text =
-                              "Tolong buatkan aku rendang");
-                        },
-                        child: Image(
-                          height: 100,
-                          width: 90,
-                          image: AssetImage('assets/images/rendang.jpeg'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(
-                    indent: MediaQuery.of(context).size.width * 0.07,
-                  ),
-                ],
-              ),
+                    )),
+              ],
             ),
           ),
         ],

@@ -1,27 +1,27 @@
 // To parse this JSON data, do
 //
-//     final objectsModel = objectsModelFromJson(jsonString);
+//     final sentencesModel = sentencesModelFromJson(jsonString);
 
 import 'dart:convert';
 
-ObjectsModel objectsModelFromJson(String str) =>
-    ObjectsModel.fromJson(json.decode(str));
+SentencesModel sentencesModelFromJson(String str) =>
+    SentencesModel.fromJson(json.decode(str));
 
-String objectsModelToJson(ObjectsModel data) => json.encode(data.toJson());
+String sentencesModelToJson(SentencesModel data) => json.encode(data.toJson());
 
-class ObjectsModel {
+class SentencesModel {
   String message;
-  List<ObjectModel> data;
+  List<SentenceModel> data;
 
-  ObjectsModel({
+  SentencesModel({
     required this.message,
     required this.data,
   });
 
-  factory ObjectsModel.fromJson(Map<String, dynamic> json) => ObjectsModel(
+  factory SentencesModel.fromJson(Map<String, dynamic> json) => SentencesModel(
         message: json["message"],
-        data: List<ObjectModel>.from(
-            json["data"].map((x) => ObjectModel.fromJson(x))),
+        data: List<SentenceModel>.from(
+            json["data"].map((x) => SentenceModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -30,26 +30,26 @@ class ObjectsModel {
       };
 }
 
-class ObjectModel {
+class SentenceModel {
   int id;
-  String name;
+  String sentence;
   String image;
   DateTime createdAt;
   DateTime updatedAt;
   String imageUrl;
 
-  ObjectModel({
+  SentenceModel({
     required this.id,
-    required this.name,
+    required this.sentence,
     required this.image,
     required this.createdAt,
     required this.updatedAt,
     required this.imageUrl,
   });
 
-  factory ObjectModel.fromJson(Map<String, dynamic> json) => ObjectModel(
+  factory SentenceModel.fromJson(Map<String, dynamic> json) => SentenceModel(
         id: json["id"],
-        name: json["name"],
+        sentence: json["sentence"],
         image: json["image"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
@@ -58,7 +58,7 @@ class ObjectModel {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
+        "sentence": sentence,
         "image": image,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),

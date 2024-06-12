@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/material.dart';
+import 'package:tugas_akhir/models/object.dart';
+import 'package:tugas_akhir/models/subject.dart';
 import 'package:tugas_akhir/services/object_service.dart';
 
 class Speech extends StatefulWidget {
@@ -14,7 +16,8 @@ class _SpeechState extends State<Speech> {
   final ExpansionTileController controller = ExpansionTileController();
   final _textController = TextEditingController();
   final FlutterTts _flutterTts = FlutterTts();
-  late Future<List<Object>> _object;
+  late Future<ObjectsModel> _object;
+  late Future<SubjectsModel> _subject;
 
   speak(String text) async {
     await _flutterTts.setLanguage("id-ID");
@@ -25,7 +28,8 @@ class _SpeechState extends State<Speech> {
   @override
   void initState() {
     super.initState();
-    _object = ObjectService.fetchObjects();
+    _object = ObjectService.getAllObjects();
+    _subject = ObjectService.getAllSubject();
   }
 
   @override
@@ -148,437 +152,102 @@ class _SpeechState extends State<Speech> {
                 Container(
                     height: MediaQuery.of(context).size.width * 0.96,
                     color: Color(0xffF3E58C).withOpacity(0.8),
-                    child: SingleChildScrollView(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(24),
-                        child: ListView(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak("saya");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage('assets/images/aku.png'),
-                                  ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(24),
+                      child: FutureBuilder(
+                        future: _subject,
+                        builder:
+                            (context, AsyncSnapshot<SubjectsModel> snapshot) {
+                          var state = snapshot.connectionState;
+                          if (state != ConnectionState.done) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            if (snapshot.hasData) {
+                              return GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
                                 ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
+                                itemCount: snapshot.data!.data.length,
+                                itemBuilder: (context, index) {
+                                  var dataSubject = snapshot.data!.data[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      speak(dataSubject.name);
+                                    },
+                                    child: Image.network(
+                                      dataSubject.imageUrl,
+                                      height: 100,
+                                      width: 90,
+                                    ),
+                                  );
+                                },
+                              );
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  snapshot.error.toString(),
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    speak("kamu");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage('assets/images/kamu.png'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak("dimana");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/dimana.png'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak("ingin");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/ingin.png'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak("makan");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/makan.png'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak("minum");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/minum.png'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "tolong");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/tolong.png'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "mendapatkan");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/mendapatkan.png'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "selesai");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/selesai.png'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "datang");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/datang.png'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
+                              );
+                            } else {
+                              return Text('');
+                            }
+                          }
+                        },
                       ),
                     )),
                 const SizedBox(height: 8),
                 Container(
                     color: Color(0xff9AC6FF).withOpacity(0.8),
                     height: MediaQuery.of(context).size.width * 0.96,
-                    child: SingleChildScrollView(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(24),
-                        child: ListView(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "air");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage('assets/images/air.jpeg'),
-                                  ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(24),
+                      child: FutureBuilder(
+                        future: _object,
+                        builder:
+                            (context, AsyncSnapshot<ObjectsModel> snapshot) {
+                          var state = snapshot.connectionState;
+                          if (state != ConnectionState.done) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            if (snapshot.hasData) {
+                              return GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
                                 ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
+                                itemCount: snapshot.data!.data.length,
+                                itemBuilder: (context, index) {
+                                  var dataObject = snapshot.data!.data[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      speak(dataObject.name);
+                                    },
+                                    child: Image.network(
+                                      dataObject.imageUrl,
+                                      height: 100,
+                                      width: 90,
+                                    ),
+                                  );
+                                },
+                              );
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  snapshot.error.toString(),
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "ayam");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/ayam.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "ayam goreng");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/ayamgoreng.jpeg'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "bakso");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/bakso.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "buaya");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/buaya.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "harimau");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/harimau.jpeg'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "kelinci");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/kelinci.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "mie");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage('assets/images/mie.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "mie ayam");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/mieayam.jpeg'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "nasi goreng");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/nasigoreng.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "panda");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/panda.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "rendang");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image: AssetImage(
-                                        'assets/images/rendang.jpeg'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: MediaQuery.of(context).size.width * 0.07,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "singa");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/singa.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "susu");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/susu.jpeg'),
-                                  ),
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    speak(_textController.text = "ular");
-                                  },
-                                  child: Image(
-                                    height: 100,
-                                    width: 90,
-                                    image:
-                                        AssetImage('assets/images/ular.jpeg'),
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
+                              );
+                            } else {
+                              return Text('');
+                            }
+                          }
+                        },
                       ),
                     ))
               ],

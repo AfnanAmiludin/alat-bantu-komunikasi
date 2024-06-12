@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:ui';
+import 'package:tugas_akhir/services/object_service.dart';
+import 'package:tugas_akhir/models/object.dart';
+import 'package:tugas_akhir/models/subject.dart';
 
 class ToSentence extends StatefulWidget {
   const ToSentence({super.key});
@@ -13,7 +16,8 @@ class _ToSentenceState extends State<ToSentence> {
   final ExpansionTileController controller = ExpansionTileController();
   final _textController = TextEditingController();
   final FlutterTts _flutterTts = FlutterTts();
-
+  late Future<ObjectsModel> _object;
+  late Future<SubjectsModel> _subject;
   final tts = [];
   final oneTts = [];
 
@@ -21,6 +25,13 @@ class _ToSentenceState extends State<ToSentence> {
     await _flutterTts.setLanguage("id-ID");
     await _flutterTts.setPitch(10);
     await _flutterTts.speak(text);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _object = ObjectService.getAllObjects();
+    _subject = ObjectService.getAllSubject();
   }
 
   @override
@@ -151,632 +162,126 @@ class _ToSentenceState extends State<ToSentence> {
                     Container(
                         height: MediaQuery.of(context).size.width * 0.90,
                         color: Color(0xffF3E58C).withOpacity(0.8),
-                        child: SingleChildScrollView(
-                          child: Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(24),
-                            child: ListView(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak("saya");
-                                        setState(() {
-                                          tts.add([
-                                            "saya",
-                                            AssetImage('assets/images/aku.png')
-                                          ]);
-                                          oneTts.add("saya");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image:
-                                            AssetImage('assets/images/aku.png'),
-                                      ),
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(24),
+                          child: FutureBuilder(
+                            future: _subject,
+                            builder: (context,
+                                AsyncSnapshot<SubjectsModel> snapshot) {
+                              var state = snapshot.connectionState;
+                              if (state != ConnectionState.done) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                if (snapshot.hasData) {
+                                  return GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
                                     ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
+                                    itemCount: snapshot.data!.data.length,
+                                    itemBuilder: (context, index) {
+                                      var dataSubject =
+                                          snapshot.data!.data[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          speak(dataSubject.name);
+                                          setState(() {
+                                            tts.add([
+                                              dataSubject.name,
+                                              Image.network(
+                                                dataSubject.imageUrl,
+                                                height: 100,
+                                                width: 90,
+                                              ),
+                                            ]);
+                                            oneTts.add(dataSubject.name);
+                                          });
+                                        },
+                                        child: Image.network(
+                                          dataSubject.imageUrl,
+                                          height: 100,
+                                          width: 90,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                      snapshot.error.toString(),
                                     ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak("kamu");
-                                        setState(() {
-                                          tts.add([
-                                            "kamu",
-                                            AssetImage('assets/images/kamu.png')
-                                          ]);
-                                          oneTts.add("kamu");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/kamu.png'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak("dimana");
-                                        setState(() {
-                                          tts.add([
-                                            "dimana",
-                                            AssetImage(
-                                                'assets/images/dimana.png')
-                                          ]);
-                                          oneTts.add("dimana");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/dimana.png'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak("ingin");
-                                        setState(() {
-                                          tts.add([
-                                            "ingin",
-                                            AssetImage(
-                                                'assets/images/ingin.png')
-                                          ]);
-                                          oneTts.add("ingin");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/ingin.png'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak("makan");
-                                        setState(() {
-                                          tts.add([
-                                            "makan",
-                                            AssetImage(
-                                                'assets/images/makan.png')
-                                          ]);
-                                          oneTts.add("makan");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/makan.png'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak("minum");
-                                        setState(() {
-                                          tts.add([
-                                            "minum",
-                                            AssetImage(
-                                                'assets/images/minum.png')
-                                          ]);
-                                          oneTts.add("minum");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/minum.png'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "tolong");
-                                        setState(() {
-                                          tts.add([
-                                            "tolong",
-                                            AssetImage(
-                                                'assets/images/tolong.png')
-                                          ]);
-                                          oneTts.add("tolong");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/tolong.png'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text =
-                                            "mendapatkan");
-                                        setState(() {
-                                          tts.add([
-                                            "mendapatkan",
-                                            AssetImage(
-                                                'assets/images/mendapatkan.png')
-                                          ]);
-                                          oneTts.add("mendapatkan");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/mendapatkan.png'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "selesai");
-                                        setState(() {
-                                          tts.add([
-                                            "selesai",
-                                            AssetImage(
-                                                'assets/images/selesai.png')
-                                          ]);
-                                          oneTts.add("selesai");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/selesai.png'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  );
+                                } else {
+                                  return Text('');
+                                }
+                              }
+                            },
                           ),
                         )),
                     const SizedBox(height: 8),
                     Container(
                         color: Color(0xff9AC6FF).withOpacity(0.8),
                         height: MediaQuery.of(context).size.width * 0.96,
-                        child: SingleChildScrollView(
-                          child: Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(24),
-                            child: ListView(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "air");
-                                        setState(() {
-                                          tts.add([
-                                            "air",
-                                            AssetImage('assets/images/air.jpeg')
-                                          ]);
-                                          oneTts.add("air");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/air.jpeg'),
-                                      ),
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(24),
+                          child: FutureBuilder(
+                            future: _object,
+                            builder: (context,
+                                AsyncSnapshot<ObjectsModel> snapshot) {
+                              var state = snapshot.connectionState;
+                              if (state != ConnectionState.done) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                if (snapshot.hasData) {
+                                  return GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
                                     ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
+                                    itemCount: snapshot.data!.data.length,
+                                    itemBuilder: (context, index) {
+                                      var dataObject =
+                                          snapshot.data!.data[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          speak(dataObject.name);
+                                          setState(() {
+                                            tts.add([
+                                              dataObject.name,
+                                              Image.network(
+                                                dataObject.imageUrl,
+                                                height: 100,
+                                                width: 90,
+                                              ),
+                                            ]);
+                                            oneTts.add(dataObject.name);
+                                          });
+                                        },
+                                        child: Image.network(
+                                          dataObject.imageUrl,
+                                          height: 100,
+                                          width: 90,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                      snapshot.error.toString(),
                                     ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "ayam");
-                                        setState(() {
-                                          tts.add([
-                                            "ayam",
-                                            AssetImage(
-                                                'assets/images/ayam.jpeg')
-                                          ]);
-                                          oneTts.add("ayam");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/ayam.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text =
-                                            "ayam goreng");
-                                        setState(() {
-                                          tts.add([
-                                            "ayam goreng",
-                                            AssetImage(
-                                                'assets/images/ayamgoreng.jpeg')
-                                          ]);
-                                          oneTts.add("ayam goreng");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/ayamgoreng.jpeg'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "bakso");
-                                        setState(() {
-                                          tts.add([
-                                            "bakso",
-                                            AssetImage(
-                                                'assets/images/bakso.jpeg')
-                                          ]);
-                                          oneTts.add("bakso");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/bakso.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "buaya");
-                                        setState(() {
-                                          tts.add([
-                                            "buaya",
-                                            AssetImage(
-                                                'assets/images/buaya.jpeg')
-                                          ]);
-                                          oneTts.add("buaya");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/buaya.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "harimau");
-                                        setState(() {
-                                          tts.add([
-                                            "harimau",
-                                            AssetImage(
-                                                'assets/images/harimau.jpeg')
-                                          ]);
-                                          oneTts.add("harimau");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/harimau.jpeg'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "kelinci");
-                                        setState(() {
-                                          tts.add([
-                                            "kelinci",
-                                            AssetImage(
-                                                'assets/images/kelinci.jpeg')
-                                          ]);
-                                          oneTts.add("kelinci");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/kelinci.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "mie");
-                                        setState(() {
-                                          tts.add([
-                                            "mie",
-                                            AssetImage('assets/images/mie.jpeg')
-                                          ]);
-                                          oneTts.add("mie");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/mie.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(
-                                            _textController.text = "mie ayam");
-                                        setState(() {
-                                          tts.add([
-                                            "mie ayam",
-                                            AssetImage(
-                                                'assets/images/mieayam.jpeg')
-                                          ]);
-                                          oneTts.add("mie ayam");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/mieayam.jpeg'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text =
-                                            "nasi goreng");
-                                        setState(() {
-                                          tts.add([
-                                            "nasi goreng",
-                                            AssetImage(
-                                                'assets/images/nasigoreng.jpeg')
-                                          ]);
-                                          oneTts.add("nasi goreng");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/nasigoreng.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "panda");
-                                        setState(() {
-                                          tts.add([
-                                            "panda",
-                                            AssetImage(
-                                                'assets/images/panda.jpeg')
-                                          ]);
-                                          oneTts.add("panda");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/panda.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "rendang");
-                                        setState(() {
-                                          tts.add([
-                                            "rendang",
-                                            AssetImage(
-                                                'assets/images/rendang.jpeg')
-                                          ]);
-                                          oneTts.add("rendang");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/rendang.jpeg'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  indent:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "singa");
-                                        setState(() {
-                                          tts.add([
-                                            "singa",
-                                            AssetImage(
-                                                'assets/images/singa.jpeg')
-                                          ]);
-                                          oneTts.add("singa");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/singa.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "susu");
-                                        setState(() {
-                                          tts.add([
-                                            "susu",
-                                            AssetImage(
-                                                'assets/images/susu.jpeg')
-                                          ]);
-                                          oneTts.add("susu");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/susu.jpeg'),
-                                      ),
-                                    ),
-                                    Divider(
-                                      indent:
-                                          MediaQuery.of(context).size.width *
-                                              0.07,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        speak(_textController.text = "ular");
-                                        setState(() {
-                                          tts.add([
-                                            "ular",
-                                            AssetImage(
-                                                'assets/images/ular.jpeg')
-                                          ]);
-                                          oneTts.add("ular");
-                                        });
-                                      },
-                                      child: Image(
-                                        height: 100,
-                                        width: 90,
-                                        image: AssetImage(
-                                            'assets/images/ular.jpeg'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  );
+                                } else {
+                                  return Text('');
+                                }
+                              }
+                            },
                           ),
                         )),
                     Divider(
@@ -804,15 +309,10 @@ class _ToSentenceState extends State<ToSentence> {
                     Stack(
                       children: [
                         InkWell(
-                          onTap: () {
-                            speak(_textController.text = item[0]);
-                          },
-                          child: Image(
-                            height: 100,
-                            width: 90,
-                            image: item[1],
-                          ),
-                        ),
+                            onTap: () {
+                              speak(_textController.text = item[0]);
+                            },
+                            child: item[1]),
                         Positioned(
                           right: 0.0,
                           child: GestureDetector(
